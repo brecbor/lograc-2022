@@ -63,7 +63,10 @@ data Bool : Set where
 -}
 
 _⊕_ : Bool → Bool → Bool
-b ⊕ b' = {!!}
+true ⊕ true = false
+true ⊕ false = true
+false ⊕ true = true
+false ⊕ false = false
 
 {-
    You can test whether your definition computes correctly by using
@@ -95,7 +98,7 @@ data ℕ : Set where
 -}
 
 incr : ℕ → ℕ
-incr n = {!!}
+incr n = suc n
 
 {-
    Define a function that decrements a number by one. Give the definition
@@ -103,7 +106,8 @@ incr n = {!!}
 -}
 
 decr : ℕ → ℕ
-decr n = {!!}
+decr zero = zero
+decr (suc n) = n
 
 {-
    Define a function that triples the value of a given number.
@@ -111,7 +115,8 @@ decr n = {!!}
 -}
 
 triple : ℕ → ℕ
-triple n = {!!}
+triple zero = zero
+triple (suc n) = suc (suc (suc (triple n)))
 
 
 ----------------
@@ -142,7 +147,8 @@ infixl 7  _*_
 -}
 
 _^_ : ℕ → ℕ → ℕ
-m ^ n = {!!}
+m ^ zero = 1
+m ^ suc n = m * (m ^ n)
 
 infixl 8  _^_
 
@@ -178,7 +184,9 @@ infixl 20 _I
 -}
 
 b-incr : Bin → Bin
-b-incr b = {!!}
+b-incr ⟨⟩ = ⟨⟩ I
+b-incr (b O) = b I
+b-incr (b I) = (b-incr b) O
 
 
 ----------------
@@ -194,11 +202,24 @@ b-incr b = {!!}
    want to use them).
 -}
 
+half : ℕ → ℕ
+half zero = zero
+half (suc zero) = zero
+half (suc (suc n)) = (half n) + 1
+
+mod2 : ℕ → ℕ
+mod2 zero = zero
+mod2 (suc zero) = 1
+mod2 (suc (suc n)) = mod2 n
+
 to : ℕ → Bin
-to n = {!!}
+to zero = ⟨⟩
+to (suc n) = b-incr (to n)
 
 from : Bin → ℕ
-from b = {!!}
+from ⟨⟩ = 0
+from (b O) = (from b) * 2
+from (b I) = (from b) * 2 + 1
 
 
 ----------------
@@ -219,6 +240,7 @@ data Even : ℕ → Set where
 
 data Even₂ : Bin → Set where
   {- EXERCISE: add the constructors for this inductive predicate here -}
+  even₂-o : Even₂ ⟨⟩
 
 
 ----------------
