@@ -101,13 +101,15 @@ postulate
 -}
 
 +-identityʳ : (n : ℕ) → n + zero ≡ n
-+-identityʳ n = {!!}
++-identityʳ zero = refl
++-identityʳ (suc n) = cong suc (+-identityʳ n)
 
 +-identityˡ : (n : ℕ) → zero + n ≡ n
-+-identityˡ n = {!!}
++-identityˡ n = refl
 
 +-suc : (n m : ℕ) → n + (suc m) ≡ suc (n + m)
-+-suc n m = {!!}
++-suc zero m = refl
++-suc (suc n) m = cong suc ( +-suc n m)
 
 
 ----------------
@@ -141,7 +143,9 @@ data Maybe (A : Set) : Set where
   nothing : Maybe A
 
 lookup : {A : Set} {n : ℕ} → Vec A n → ℕ → Maybe A
-lookup xs i = {!!}
+lookup [] i = nothing
+lookup (x ∷ xs) zero = just x
+lookup (x ∷ xs) (suc i) = lookup xs i
 
 
 ----------------
@@ -179,7 +183,8 @@ lookup-totalᵀ : {n : ℕ}
               → i < n                           -- `i` in `{0,1,...,n-1}`
               → lookup xs i ≡ just ⋆
              
-lookup-totalᵀ xs i p = {!!}
+lookup-totalᵀ (⋆ ∷ xs) zero p = refl
+lookup-totalᵀ (x ∷ xs) (suc i) p = lookup-totalᵀ xs i (Data.Nat.≤-pred p)
 
 {-
    Note: In the standard library, `⊤` is defined as a record type. Here
@@ -218,7 +223,8 @@ data Fin : ℕ → Set where
   suc  : {n : ℕ} (i : Fin n) → Fin (suc n)
 
 safe-lookup : {A : Set} {n : ℕ} → Vec A n → Fin n → A
-safe-lookup xs i = {!!}
+safe-lookup (x ∷ xs) zero = x
+safe-lookup (x ∷ xs) (suc i) = safe-lookup xs i
 
 
 ----------------
@@ -238,8 +244,9 @@ safe-lookup xs i = {!!}
    the correct type, the yellow highlighting below will disappear.
 -}
 
-nat-to-fin : {!!}
-nat-to-fin = {!!}
+nat-to-fin : {n : ℕ} → (i : ℕ) → (p : i < n) → Fin n
+nat-to-fin zero (s≤s p) = zero
+nat-to-fin (suc i) (s≤s p) = suc (nat-to-fin i p)
 
 lookup-correct : {A : Set} {n : ℕ}
                → (xs : Vec A n)
@@ -247,7 +254,8 @@ lookup-correct : {A : Set} {n : ℕ}
                → (p : i < n)
                → lookup xs i ≡ just (safe-lookup xs (nat-to-fin i p))
 
-lookup-correct x i p = {!!}
+lookup-correct (x ∷ xs) zero (s≤s p) = refl
+lookup-correct (x ∷ xs) (suc i) (s≤s p) = lookup-correct xs i p
 
 
 ----------------
@@ -258,10 +266,10 @@ lookup-correct x i p = {!!}
    Define a function that extracts the first `n` elements from a
    vector of length `n + m`.
 -}
-
+{-
 take-n : {A : Set} {n m : ℕ} → Vec A (n + m) → Vec A n
 take-n xs = {!!}
-
+-}
 
 ----------------
 -- Exercise 6 --
@@ -272,10 +280,10 @@ take-n xs = {!!}
    a vector of length `m + n`. Hint: Do not define this function
    by recursion. Use `take-n` and equational reasoning instead.
 -}
-
+{-
 take-n' : {A : Set} {n m : ℕ} → Vec A (m + n) → Vec A n
 take-n' xs = {!!}
-
+-}
 
 ----------------
 -- Exercise 7 --
@@ -285,10 +293,10 @@ take-n' xs = {!!}
    Define a function from vectors to lists that is identity on the
    list elements but forgets the length-index of the vector type.
 -}
-
+{-
 vec-list : {A : Set} {n : ℕ} → Vec A n → List A
 vec-list xs = {!!}
-
+-}
 {-
    Define a function from lists to vectors that is identity on the
    elements.
@@ -296,10 +304,10 @@ vec-list xs = {!!}
    Note the hole in the result type. Fill it with an appropriate 
    natural number specifying the length of the returned vector.
 -}
-
+{-
 list-vec : {A : Set} → (xs : List A) → Vec A {!!}
 list-vec xs = {!!}
-
+-}
 
 ----------------
 -- Exercise 8 --
@@ -309,13 +317,13 @@ list-vec xs = {!!}
    Prove that the `vec-list` function produces a list with the same
    length as the given vector.
 -}
-
+{-
 vec-list-length : {A : Set} {n : ℕ}
                 → (xs : Vec A n)
                 → n ≡ length (vec-list xs)
                 
 vec-list-length xs = {!!}
-
+-}
 
 ----------------
 -- Exercise 9 --
@@ -327,10 +335,10 @@ vec-list-length xs = {!!}
    we define a dimension-safe m by n matrix as a length-m vector
    (modelling the rows) of length-n vectors (modelling the columns).
 -}
-
+{-
 Matrix : Set → ℕ → ℕ → Set
 Matrix A m n = Vec (Vec A n) m
-
+-}
 {-
    Define the addition of two matrices holding natural-number values.
 
@@ -342,10 +350,10 @@ Matrix A m n = Vec (Vec A n) m
    Hint: You might find it helpful to define the point-wise addition
    of two vectors of the same length.
 -}
-
+{-
 _+ᴹ_ : {m n : ℕ} → Matrix ℕ m n → Matrix ℕ m n → Matrix ℕ m n
 xss +ᴹ yss = {!!}
-
+-}
 
 -----------------------------
 -----------------------------
@@ -368,12 +376,12 @@ xss +ᴹ yss = {!!}
    Prove that `vec-list` is the left inverse of `list-vec`.
    Observe that you have to prove equality between functions.
 -}
-
+{-
 list-vec-list : {A : Set}
               → vec-list ∘ list-vec ≡ id {A = List A}
               
 list-vec-list = {!!}
-
+-}
 
 -----------------
 -- Exercise 11 --
@@ -388,10 +396,10 @@ list-vec-list = {!!}
    Hint 2: When defining `transpose`, think how you would express it
    in terms of the transpose of the submatrix without the first row.
 -}
-
+{-
 transpose : {A : Set} {m n : ℕ} → Matrix A m n → Matrix A n m
 transpose xss = {!!}
-
+-}
 
 -----------------
 -- Exercise 12 --
@@ -411,12 +419,12 @@ transpose xss = {!!}
    and reflection in type theory. For more information, see the Decidable
    section in the PLFA textbook (https://plfa.inf.ed.ac.uk/Decidable/).
 -}
-
+{-
 data _</≡/>_ (n m : ℕ) : Set where
   n<m : n < m → n </≡/> m
   n≡m : n ≡ m → n </≡/> m
   n>m : n > m → n </≡/> m
-
+-}
 {-
    Define a function `test-</≡/>` that, given two natural numbers,
    returns the proof of either `n < m`, `n ≡ m`, or `n > m`
@@ -427,10 +435,10 @@ data _</≡/>_ (n m : ℕ) : Set where
    can compute which of the three situations actually holds. See
    PLFA (https://plfa.inf.ed.ac.uk/Decidable/) for more details.
 -}
-
+{-
 test-</≡/> : (n m : ℕ) → n </≡/> m
 test-</≡/> n m = {!!}
-
+-}
 
 -----------------
 -- Exercise 13 --
@@ -458,11 +466,11 @@ test-</≡/> n m = {!!}
 
    of type `Tree ℕ`.
 -}
-
+{-
 data Tree (A : Set) : Set where
   empty : Tree A
   node  : Tree A → A → Tree A → Tree A
-
+-}
 {-
    For trees holding natural numbers, define a function that inserts a
    given natural number into a tree following the insertion strategy for
@@ -481,15 +489,15 @@ data Tree (A : Set) : Set where
    (https://agda.readthedocs.io/en/v2.6.2.1/language/with-abstraction.html)
    to do perform pattern-matching without having to define auxiliary functions.
 -}
-
+{-
 insert : Tree ℕ → ℕ → Tree ℕ
 insert t n = {!!}
-
+-}
 {-
    As a sanity check, prove that inserting 12, 27, and 52 into the above
    example tree correctly returns the expected trees.
 -}
-
+{-
 insert-12 : insert (node (node empty 22 (node empty 32 empty)) 42 (node empty 52 empty)) 12
             ≡
             node (node (node empty 12 empty) 22 (node empty 32 empty)) 42 (node empty 52 empty)
@@ -504,7 +512,7 @@ insert-52 : insert (node (node empty 22 (node empty 32 empty)) 42 (node empty 52
             ≡
             node (node empty 22 (node empty 32 empty)) 42 (node empty 52 empty)
 insert-52 = {!!}
-
+-}
 
 -----------------
 -- Exercise 14 --
@@ -517,11 +525,11 @@ insert-52 = {!!}
    Hint: This relation should specify a path in a given tree from its
    root to the desired natural number whose existence we are specifying.
 -}
-
+{-
 data _∈_ (n : ℕ) : Tree ℕ → Set where
   {- EXERCISE: the constructors for the `∈` relation go here -}
 
-
+-}
 {-
    Prove that the tree returned by the `insert` function indeed
    contains the inserted natural number.
@@ -537,10 +545,10 @@ data _∈_ (n : ℕ) : Tree ℕ → Set where
    If you haven't spotted this already, then it is part of a general
    pattern---proofs often follow the same structure as the definitions.
 -}
-
+{-
 insert-∈ : (t : Tree ℕ) → (n : ℕ) → n ∈ (insert t n)
 insert-∈ t n = {!!}
-
+-}
 
 -----------------------------------
 -----------------------------------
@@ -576,7 +584,7 @@ insert-∈ t n = {!!}
    used in Agda for the empty and unit type). We then also extend the
    order `<` to take these new bottom and top elements into account.
 -}
-
+{-
 data ℕ∞ : Set where
   -∞  :     ℕ∞
   [_] : ℕ → ℕ∞
@@ -586,7 +594,7 @@ data _<∞_ : ℕ∞ → ℕ∞ → Set where
   -∞<n  : {n   : ℕ∞}  →          -∞   <∞   n
   []<[] : {n m : ℕ}   → n < m → [ n ] <∞ [ m ]
   n<+∞  : {n   : ℕ∞}  →           n   <∞  +∞
-
+-}
 {-
    Using this extended definition of natural numbers, we next define
    an inductive predicate `IsBST` on binary trees that specifies when
@@ -605,7 +613,7 @@ data _<∞_ : ℕ∞ → ℕ∞ → Set where
    a `node t n u` tree node are allowed to store. Further, note that the
    `empty` case holds a proof that `lower` is indeed less than `upper`.   
 -}
-
+{-
 data IsBST-rec (lower upper : ℕ∞) : Tree ℕ → Set where
   empty-bst : (p : lower <∞ upper) → IsBST-rec lower upper empty
   node-bst  : {t u : Tree ℕ} {n : ℕ}
@@ -619,7 +627,7 @@ data IsBST : Tree ℕ → Set where
             → IsBST-rec -∞ [ n ] t
             → IsBST-rec [ n ] +∞ u
             → IsBST (node t n u)
-
+-}
 {-
    Prove that having the `(p : lower <∞ upper)` proof witness in the
    `empty` cases of the `IsBST-rec` relation indeed forces the `<∞`
@@ -627,20 +635,20 @@ data IsBST : Tree ℕ → Set where
 
    Hint: You might find it helpful to prove the transitivity of `<∞`.
 -}
-
+{-
 isbst-rec-<∞ : {lower upper : ℕ∞} {t : Tree ℕ}
              → IsBST-rec lower upper t
              → lower <∞ upper
              
 isbst-rec-<∞ p = {!!}
-
+-}
 {-
    Disclaimer: The `(p : lower <∞ upper)` proof witness in the `empty`
    case of the `IsBST-rec` relation means that every proof about a
    given tree being a binary search tree needs one to construct such
    proofs explicitly for all `empty` (sub)trees. For example, see below:
 -}
-
+{-
 bst : IsBST (node (node empty 2 (node empty 3 empty)) 5 (node empty 6 empty))
 bst = node-bst
         (node-bst
@@ -651,7 +659,7 @@ bst = node-bst
         (node-bst
            (empty-bst ([]<[] (s≤s (s≤s (s≤s (s≤s (s≤s (s≤s z≤n))))))))
            (empty-bst n<+∞))
-
+-}
 {-
    A more user-friendly variant of the `IsBST-rec` relation could use
    Agda's instance arguments `{{...}}` and type classes to attempt to
@@ -679,10 +687,10 @@ bst = node-bst
    might find it useful to prove an auxiliary lemma about `insert`
    preserving also the recursively defined `IsBST-rec` relation.
 -}
-
+{-
 insert-bst : (t : Tree ℕ) → (n : ℕ) → IsBST t → IsBST (insert t n)
 insert-bst t n p = {!!}
-
+-}
 
 -----------------
 -- Exercise 17 --
@@ -711,12 +719,12 @@ insert-bst t n p = {!!}
    prove, relating element-wise equality of vectors to the `≡` relation
    on vectors, etc. So we suggest you leave this one for the very last.
 -}
-
+{-
 vec-list-vec : {A : Set} {n : ℕ}
              → list-vec ∘ vec-list ≡ {!!}
                
 vec-list-vec = {!!}
-
+-}
 
 -----------------------------------
 -----------------------------------
