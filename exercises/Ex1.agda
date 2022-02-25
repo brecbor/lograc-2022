@@ -213,7 +213,7 @@ mod2 (suc zero) = 1
 mod2 (suc (suc n)) = mod2 n
 
 to : ℕ → Bin
-to zero = ⟨⟩
+to zero = ⟨⟩ O
 to (suc n) = b-incr (to n)
 
 from : Bin → ℕ
@@ -239,9 +239,15 @@ data Even : ℕ → Set where
 -}
 
 data Even₂ : Bin → Set where
+  even₂ : {b : Bin} → Even₂ (b O)
   {- EXERCISE: add the constructors for this inductive predicate here -}
-  even₂-o : Even₂ ⟨⟩
 
+{- Test that Even works: -}
+four-is-even : Even 4
+four-is-even = even-ss (even-ss even-z)
+
+bin-four-is-even : Even₂ (to 4)
+bin-four-is-even = even₂
 
 ----------------
 -- Exercise 7 --
@@ -253,7 +259,19 @@ data Even₂ : Bin → Set where
 -}
 
 to-even : {n : ℕ} → Even n → Even₂ (to n)
-to-even p = {!!}
+to-even even-z = even₂
+to-even (even-ss p) = even-b++ (to-even p) 
+
+  where
+
+    -- data Odd₂ : Bin → Set where
+    --   odd₂ : {b : Bin} → Odd₂ (b I)
+
+    -- odd-incr-even : {b : Bin} → Odd₂ b → Even₂ (b-incr b)
+    -- odd-incr-even {b I} odd₂ = even₂
+
+    even-b++ : {b : Bin} → Even₂ b → Even₂ (b-incr (b-incr b))
+    even-b++ even₂ = even₂ 
 
 
 ----------------
@@ -275,6 +293,11 @@ to-even p = {!!}
 
 data NonEmptyBin : Bin → Set where
   {- EXERCISE: add the constructors for this inductive predicate here -}
+  neO : {b : Bin} → NonEmptyBin (b O)
+  neI : {b : Bin} → NonEmptyBin (b I)
+  -- My way, which is wrong (because line 311 would not work)
+  -- non-empty-z : NonEmptyBin (⟨⟩ O)
+  -- non-empty-s : {b : Bin} → NonEmptyBin b → NonEmptyBin (b-incr b)
 
 {-
    To verify that `NonEmptyBin ⟨⟩` is indeed not inhabited as intended,
@@ -285,7 +308,7 @@ data NonEmptyBin : Bin → Set where
 data ⊥ : Set where
 
 ⟨⟩-empty : NonEmptyBin ⟨⟩ → ⊥
-⟨⟩-empty p = {!!}
+⟨⟩-empty ()
 
 
 ----------------
