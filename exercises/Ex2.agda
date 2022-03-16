@@ -266,10 +266,10 @@ lookup-correct (x ∷ xs) (suc i) (s≤s p) = lookup-correct xs i p
    Define a function that extracts the first `n` elements from a
    vector of length `n + m`.
 -}
-{-
+
 take-n : {A : Set} {n m : ℕ} → Vec A (n + m) → Vec A n
-take-n xs = {!!}
--}
+take-n {A} {zero} {m} xs = []
+take-n {A} {suc n} {m} (x ∷ xs) = x ∷ take-n xs
 
 ----------------
 -- Exercise 6 --
@@ -280,10 +280,8 @@ take-n xs = {!!}
    a vector of length `m + n`. Hint: Do not define this function
    by recursion. Use `take-n` and equational reasoning instead.
 -}
-{-
 take-n' : {A : Set} {n m : ℕ} → Vec A (m + n) → Vec A n
 take-n' xs = {!!}
--}
 
 ----------------
 -- Exercise 7 --
