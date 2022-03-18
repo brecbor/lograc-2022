@@ -83,8 +83,7 @@ take-n {n = suc n} (x ∷ xs) = x ∷ take-n xs
 -}
 
 take-n' : {A : Set} {n m : ℕ} → Vec A (m + n) → Vec A n
-take-n' {A} xs = take-n {!   !}
-
+take-n' {A} {n} {m} xs = take-n (subst (Vec A) (+-comm m n) xs) 
 
 ----------------
 -- Exercise 2 --
@@ -117,13 +116,18 @@ list-vec (x ∷ xs) = x ∷ list-vec xs
 
 list-vec-list : {A : Set}
               → vec-list ∘ list-vec ≡ id {A = List A}
-list-vec-list = {!   !}
-{-
-list-vec-list {A} = {! fun-ext list-vec-list-aux ? !}
-where
-  list-vec-list-aux : (xs : List A) → (vec-list ∘ list-vec) xs ≣ id xs
-  list-vec-list-aux xs = ?
--}
+list-vec-list {A} = fun-ext list-vec-list-aux
+  where
+    list-vec-list-aux : (xs : List A) → vec-list (list-vec xs) ≡ id xs
+    list-vec-list-aux [] = refl
+    list-vec-list-aux (x ∷ xs) = 
+      begin
+        vec-list (list-vec (x ∷ xs))
+      ≡⟨⟩
+        x ∷ (vec-list (list-vec xs))
+      ≡⟨ cong (x ∷_) (list-vec-list-aux xs) ⟩
+        x ∷ xs
+      ∎
 
 {-
    Note: The dual lemma, showing that `list-vec` is the left inverse
@@ -208,7 +212,25 @@ list-ext : {A : Set} {xs ys : List A}
               → safe-list-lookup xs i p ≡ safe-list-lookup ys i q)
          → xs ≡ ys
 
-list-ext = {!!}
+list-ext {xs = []} {ys = []} p q = refl
+list-ext {xs = x ∷ xs} {ys = y ∷ ys} p q = 
+  begin
+    x ∷ xs
+  ≡⟨ cong (_∷ xs) (q 0 (s≤s z≤n) (s≤s z≤n)) ⟩
+    y ∷ xs
+  ≡⟨ cong
+      (y ∷_)
+      (list-ext
+        (suc-inj p)
+        (λ i p' q' → q (suc i) (s≤s p') (s≤s q'))) ⟩
+    y ∷ ys
+  ∎
+
+    where
+
+      suc-inj : {n m : ℕ} → _≡_ {A = ℕ} (suc n) (suc m) → n ≡ m
+      suc-inj refl = refl
+
 
 {-
    Notice that we have generalised this statement a bit compared
@@ -259,12 +281,11 @@ open _≃_
           ≃
           Σ[ xy ∈ Σ[ x ∈ A ] (B x) ] (C (proj₁ xy) (proj₂ xy))
         
-Σ-assoc = record 
-  { to      = λ { (x , y , z) → (x , y) , z }  -- brackets { } mean pattern matching lambda
-  ; from    = λ ((x , y) , z) → x , y , z
-  ; from∘to = λ xys → refl
-  ; to∘from = λ xys → refl
-  }
+Σ-assoc = record {
+  to      = λ { (x , y , z) → (x , y) , z } ;  -- brackets { } mean pattern matching lambda
+  from    = λ ((x , y) , z) → x , y , z ;
+  from∘to = λ xys → refl ;
+  to∘from = λ xys → refl }
 
 {-
    Second, prove the same thing using copatterns. For a reference on copatterns,
@@ -276,10 +297,10 @@ open _≃_
           ≃
           Σ[ xy ∈ Σ[ x ∈ A ] (B x) ] (C (proj₁ xy) (proj₂ xy))
 
-to Σ-assoc' (x , y , z) = (x , y) , z
-from Σ-assoc'    = {!   !}
-from∘to Σ-assoc' = {!   !}
-to∘from Σ-assoc' = {!   !}
+to      Σ-assoc' (x , y , z) = (x , y) , z
+from    Σ-assoc' ((x , y) , z)   =  x , y , z  
+from∘to Σ-assoc' xyz = refl  
+to∘from Σ-assoc' xyz = refl 
 
 ----------------
 -- Exercise 7 --
@@ -307,7 +328,16 @@ to∘from Σ-assoc' = {!   !}
      ≡⟨ map-id xs ⟩
        xs
      ∎ ; 
-   to∘from = {!   !} }
+   to∘from =  λ ys →
+     begin
+       map (to iso) (map (from iso) ys)
+     ≡⟨ sym (map-compose ys) ⟩
+       map (to iso ∘ from iso) ys
+     ≡⟨ cong (λ f → map f ys) (fun-ext (to∘from iso)) ⟩
+       map id ys
+     ≡⟨ map-id ys ⟩
+       ys
+     ∎ }
 
 ----------------
 -- Exercise 8 --
