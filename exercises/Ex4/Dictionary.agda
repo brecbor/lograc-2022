@@ -108,13 +108,13 @@ record Dictionary {l₁ l₂ l₃ : Level}
                          → lkp d k ≡ nothing
                          → lkp (add-if-new d (k , x)) k ≡ just x
                          
-  lkp-add-if-new-nothing k x d p = {!!}
+  lkp-add-if-new-nothing k x d p rewrite p = lkp-add-≡ k x d
 
   lkp-add-if-new-just : (k : Keys) (x x' : A) (d : Dict)
                       → lkp d k ≡ just x'
                       → lkp (add-if-new d (k , x)) k ≡ just x'
                       
-  lkp-add-if-new-just k x x' d p = {!!}
+  lkp-add-if-new-just k x x' d p rewrite p = p
 
 
 ----------------
@@ -139,13 +139,37 @@ module _ {l₁ l₂} (K : Key {l₁}) (A : Set l₂) where
   ListDict : Dictionary K A
   ListDict = record {
     Dict      = List (Keys × A) ;
-    emp       = {!!} ;
-    lkp       = {!!} ;
-    add       = {!!} ;
-    lkp-emp   = {!!} ;
-    lkp-add-≡ = {!!} ;
-    lkp-add-≢ = {!!} }
+    emp       = [] ;
+    lkp       = lkp-aux ;
+    add       = add-aux ;
+    lkp-emp   = λ k → refl ;
+    lkp-add-≡ = lkp-add-≡-aux ;
+    lkp-add-≢ = lkp-add-≢-aux }
 
+      where
+
+        lkp-aux : List (Keys × A) → Keys → Maybe A
+        lkp-aux [] k = nothing
+        lkp-aux ((k' , v') ∷ d) k with test-keys k k'
+        ...                          | yes _ = just v'
+        ...                          | no _ = lkp-aux d k
+
+        -- TODO: is such definition ok?
+        add-aux : List (Keys × A) → Keys × A → List (Keys × A)
+        add-aux d pair = pair ∷ d
+
+        lkp-add-≡-aux : (k : Keys) (x : A) (d : List (Keys × A))
+                        → lkp-aux (add-aux d (k , x)) k ≡ just x
+        lkp-add-≡-aux k x d with test-keys k k
+        ... | yes p = refl
+        ... | no p = ⊥-elim (p refl)
+
+        lkp-add-≢-aux : (k k' : Keys) (x : A) (d : List (Keys × A))
+                      → k ≢ k'
+                      → lkp-aux (add-aux d (k , x)) k' ≡ lkp-aux d k'
+        lkp-add-≢-aux k k' x d p with test-keys k' k
+        ... | yes q = ⊥-elim (p (sym q))
+        ... | no q = refl
 
 ----------------
 -- Exercise 3 --
@@ -188,7 +212,15 @@ module _ {l₁ l₂} (K : Key {l₁}) (A : Set l₂) where
   ListDict' : Dictionary' K A
   ListDict' = record {
     Dict'     = ListDict K A ;
-    add-add-≡ = {!!} }
+    add-add-≡ = add-add-≡-aux }
+    
+      where
+
+        open Dictionary (ListDict K A)
+
+        add-add-≡-aux : (k : Keys) (x x' : A) (d : Dict)
+                      → add (add d (k , x)) (k , x') ≡ add d (k , x')
+        add-add-≡-aux k x x' d = {!!}
 
 
 -------------------------------
