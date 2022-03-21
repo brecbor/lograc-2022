@@ -92,7 +92,13 @@ Env = AtomicFormula → ℙ
 -}
 
 _implies_ : ℙ → ℙ → ℙ
-b₁ implies b₂ = {!!}
+{-
+false implies b₂ = true
+true implies b₂ = b₂
+-}
+
+-- better way
+b₁ implies b₂ = (not b₁) or b₂
 
 {-
    The recursively defined interpretation function for formulae.
