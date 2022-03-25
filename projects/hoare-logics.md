@@ -20,6 +20,16 @@ Hoare Logic) is the book "Logic in Computer Science" by Huth & Ryan
 
 * Define a deep embedding of Hoare Logic for WHILE + X.
 
+  - In the first instance, instead of the general (possibly) divergent
+    while loop construct `WHILE B DO C`, use a terminating for loop
+    combinator `FOR E1 to E2 do C` (where you give the lower and upper
+    bounds for the loop index, which is then incremented implicitly).
+
+  - Once you have everything working for the terminating variant of
+    WHILE, then an additional challenge is to use the delay monad
+    to allow possibly divergent computations (like the general while
+    loop construct).
+
 * Define a definitional interpreter for WHILE + X.
 
 * Prove that the Hoare Logic is sound with respect to the definitional
