@@ -95,7 +95,10 @@ open module ND = Ex5.NaturalDeduction AtomicFormula
 ⇒-preserves-⊤ : (φ : Formula)
               → [] ⊢ ⊤ ⇔ φ ⇒ ⊤
 
-⇒-preserves-⊤ φ = {!!}
+⇒-preserves-⊤ φ =
+  ∧-intro
+  (⇒-intro (⇒-intro (hyp ⊤)))
+  (⇒-intro ⊤-intro)
 
 ⇒-preserves-∧ : (φ ψ ξ : Formula)
               → [] ⊢ φ ⇒ ψ ∧ ξ ⇔ (φ ⇒ ψ) ∧ (φ ⇒ ξ)

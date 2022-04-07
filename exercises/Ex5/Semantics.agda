@@ -281,8 +281,13 @@ soundness : {Δ : Hypotheses}
           → {η : Env}
           → ⟦ Δ ⟧ₑ η ≤ ⟦ φ ⟧ η
 
-soundness (weaken {Δ₁} {Δ₂} φ {ψ} d) {η} = {!!}
-    
+soundness (weaken {Δ₁} {Δ₂} φ {ψ} d) {η} = -- {!!}
+  beginᵇ
+    ⟦ Δ₁ ++ [ φ ] ++ Δ₂ ⟧ₑ η
+  ≤⟨ {!!} ⟩
+    ⟦ ψ ⟧ η
+  ∎ᵇ
+
 soundness (contract {Δ₁} {Δ₂} φ {ψ} d) {η} =
   beginᵇ
     ⟦ Δ₁ ++ [ φ ] ++ Δ₂ ⟧ₑ η
